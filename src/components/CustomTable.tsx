@@ -11,7 +11,7 @@ import {
 import { ReactNode } from "react";
 
 export interface ICustomTable {
-  headers: string[];
+  headers: (string | ReactNode)[];
   body: ReactNode;
   sx?: {
     container?: SxProps<Theme>;
@@ -72,12 +72,12 @@ export const tableSx: ITableStyle = {
   bodyRow: {
     background: (theme) => theme.palette.common.white,
     "&> td:first-of-type": {
-      borderTopLeftRadius: "10px",
-      borderBottomLeftRadius: "10px",
+      borderTopLeftRadius: (theme) => theme.spacing(1.5),
+      borderBottomLeftRadius: (theme) => theme.spacing(1.5),
     },
     "&> td:last-child": {
-      borderTopRightRadius: "10px",
-      borderBottomRightRadius: "10px",
+      borderTopRightRadius: (theme) => theme.spacing(1.5),
+      borderBottomRightRadius: (theme) => theme.spacing(1.5),
     },
   },
 };

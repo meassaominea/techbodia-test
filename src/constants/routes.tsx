@@ -5,4 +5,5 @@ export const ROUTE_PATH = {
 
 export const ROUTE_API = {
   root: import.meta.env.VITE_REACT_API_URL,
+  countryList: "/all",
 };

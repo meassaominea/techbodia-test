@@ -8,7 +8,7 @@ const RequestUtil = Axios.create({
 // // Add a request interceptor
 RequestUtil.interceptors.request.use(async (config) => {
   config.headers["Content-Type"] = "application/json";
-  config.headers["Accept"] = '"*/*"';
+  config.headers["Accept"] = "*/*";
 
   return config;
 });

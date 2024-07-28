@@ -1,42 +1,141 @@
 import {
+  Avatar,
+  CircularProgress,
   Container,
+  IconButton,
   Stack,
   TableCell,
+  TablePagination,
   TableRow,
   Typography,
 } from "@mui/material";
 import { useRequest } from "ahooks";
 import CustomTable, { tableSx } from "components/CustomTable";
+import EmptyResponse from "components/ResponseUIs/EmptyResponse";
+import ErrorResponse from "components/ResponseUIs/ErrorResponse";
+import { ArrowDown, ArrowUp } from "iconsax-react";
+import { useState } from "react";
+import COUNTRY_API from "services/country-service";
 
 const Country = () => {
+  const {
+    data: dataCountry,
+    loading: loadingCountry,
+    error: errorCountry,
+  } = useRequest(COUNTRY_API.getCountry);
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [sort, setSort] = useState("asc");
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
-    <Container component={Stack}>
+    <Container component={Stack} pb={2}>
       <Typography variant="h4" mb={2}>
-        Country
+        World Country
       </Typography>
 
-      <CustomTable
-        headers={[
-          "Flag",
-          "Country Name",
-          "CCA2",
-          "CCA3",
-          "Native Name",
-          "Alternative Name",
-          "IDD",
-        ]}
-        body={
-          <TableRow sx={tableSx.bodyRow}>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-            <TableCell>Cell</TableCell>
-          </TableRow>
-        }
-      />
+      {loadingCountry ? (
+        <Stack height="75vh" alignItems="center" justifyContent="center">
+          <CircularProgress />
+        </Stack>
+      ) : errorCountry ? (
+        <ErrorResponse height="75vh" errorMessage={errorCountry?.message} />
+      ) : dataCountry && dataCountry.length > 0 ? (
+        <CustomTable
+          headers={[
+            "Flag",
+            <>
+              Country Name{" "}
+              <IconButton
+                size="small"
+                onClick={() =>
+                  setSort((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
+              >
+                {sort === "asc" ? (
+                  <ArrowDown size={18} />
+                ) : (
+                  <ArrowUp size={18} />
+                )}
+              </IconButton>
+            </>,
+            "CCA2",
+            "CCA3",
+            "Native Name",
+            "Alternative Name",
+            "IDD",
+          ]}
+          body={dataCountry
+            .sort((a, b) =>
+              sort === "asc"
+                ? a.name.official.localeCompare(b.name.official)
+                : b.name.official.localeCompare(a.name.official)
+            )
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((country) => (
+              <TableRow sx={tableSx.bodyRow} key={country.name.official}>
+                <TableCell>
+                  <Avatar
+                    variant="rounded"
+                    src={country.flags.png}
+                    alt="flags"
+                    slotProps={{ img: { sx: { objectFit: "contain" } } }}
+                  />
+                </TableCell>
+                <TableCell>{country.name.official}</TableCell>
+                <TableCell>{country.cca2}</TableCell>
+                <TableCell>{country.cca3}</TableCell>
+                <TableCell>
+                  {country.name.nativeName &&
+                    Object.values(country.name.nativeName).map(
+                      (e) => e.official
+                    )[0]}
+                </TableCell>
+                <TableCell>{country.altSpellings.join(", ")}</TableCell>
+                <TableCell>
+                  {country.idd.suffixes
+                    ?.map((e) => `${country.idd.root}${e}`)
+                    .join(", ")
+                    .slice(0, 5)}
+                  {(country.idd.suffixes?.length ?? 0) > 5 && "..."}
+                </TableCell>
+              </TableRow>
+            ))}
+        />
+      ) : (
+        <EmptyResponse height="75vh" />
+      )}
+
+      {dataCountry && (
+        <TablePagination
+          component="div"
+          count={dataCountry.length}
+          page={page}
+          onPageChange={handleChangePage}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            position: "sticky",
+            bottom: 0,
+            bgcolor: "common.white",
+            borderRadius: 2,
+          }}
+        />
+      )}
     </Container>
   );
 };
