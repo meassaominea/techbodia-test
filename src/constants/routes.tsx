@@ -3,6 +3,6 @@ export const ROUTE_PATH = {
   country: "/country",
 };
 
-export const Route_Api = {
+export const ROUTE_API = {
   root: import.meta.env.VITE_REACT_API_URL,
 };
