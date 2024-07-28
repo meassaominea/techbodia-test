@@ -1,8 +1,11 @@
 import {
   Avatar,
+  Box,
   CircularProgress,
   Container,
+  Dialog,
   IconButton,
+  Modal,
   Stack,
   TableCell,
   TablePagination,
@@ -11,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRequest } from "ahooks";
+import CountryDetail from "components/CountryDetail";
 import CustomTable, { tableSx } from "components/CustomTable";
 import EmptyResponse from "components/ResponseUIs/EmptyResponse";
 import ErrorResponse from "components/ResponseUIs/ErrorResponse";
@@ -20,23 +24,26 @@ import { useEffect, useState } from "react";
 import COUNTRY_API from "services/country-service";
 
 const Country = () => {
+  // Hooks
   const {
     data: dataCountry,
     loading: loadingCountry,
     error: errorCountry,
   } = useRequest(COUNTRY_API.getCountry);
 
-  const countryNameString = dataCountry?.map((e) => e.name.official) ?? [];
-  const fuse = new Fuse(countryNameString, {
-    threshold: 0.3,
-  });
-
+  // States
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [sort, setSort] = useState("asc");
   const [filteredCountry, setFilterCountry] = useState<string[]>([]);
+  const [detailModal, setDetailModal] = useState({ open: false, name: "" });
 
+  // Variables
+  const countryNameString = dataCountry?.map((e) => e.name.official) ?? [];
+  const fuse = new Fuse(countryNameString, {
+    threshold: 0.3,
+  });
   const countryList = dataCountry
     ?.filter((e) =>
       search.length > 0 ? filteredCountry.includes(e.name.official) : e
@@ -48,6 +55,7 @@ const Country = () => {
     )
     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
+  // Methods
   const handleChangePage = (
     _: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
@@ -62,6 +70,7 @@ const Country = () => {
     setPage(0);
   };
 
+  // useEffects
   useEffect(() => {
     if (page > 0) {
       setPage(0);
@@ -117,7 +126,13 @@ const Country = () => {
             "IDD",
           ]}
           body={countryList.map((country) => (
-            <TableRow sx={tableSx.bodyRow} key={country.name.official}>
+            <TableRow
+              sx={tableSx.bodyRow}
+              key={country.name.official}
+              onClick={() =>
+                setDetailModal({ open: true, name: country.name.official })
+              }
+            >
               <TableCell>
                 <Avatar
                   variant="rounded"
@@ -166,6 +181,16 @@ const Country = () => {
           }}
         />
       )}
+
+      <Dialog
+        open={detailModal.open}
+        onClose={() => setDetailModal({ ...detailModal, open: false })}
+      >
+        <CountryDetail
+          countryName={detailModal.name}
+          onClose={() => setDetailModal({ ...detailModal, open: false })}
+        />
+      </Dialog>
     </Container>
   );
 };

@@ -13,6 +13,12 @@ const COUNTRY_API = {
     );
     return response.data;
   },
+  getCountryDetail: async ({ name }: { name: string }) => {
+    const response = await RequestUtil.get<ICountry.Country[]>(
+      ROUTE_API.countryByName.replace(":name", name)
+    );
+    return response.data?.[0];
+  },
 };
 
 export default COUNTRY_API;
