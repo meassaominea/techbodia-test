@@ -6,7 +6,7 @@ import theme from "theme";
 function App() {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter basename="techbodia-test">
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <AllRoutes />

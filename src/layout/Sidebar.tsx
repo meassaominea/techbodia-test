@@ -67,7 +67,7 @@ const Sidebar = () => {
           <Avatar
             variant="square"
             alt="logo-title"
-            src="/logo.png"
+            src={`/techbodia-test/logo.png`}
             sx={{
               width: !collapseDrawer ? 64 : 56,
               height: !collapseDrawer ? 64 : 56,
@@ -186,11 +186,6 @@ const drawerCollapeSx: SxProps = {
     bgcolor: "background.paper",
     transition: "all 300ms ease-out",
   },
-};
-
-const avatarSx: SxProps = {
-  bgcolor: "primary.light",
-  color: "common.white",
 };
 
 export default Sidebar;
