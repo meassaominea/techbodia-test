@@ -11,72 +11,31 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useRequest } from "ahooks";
-import CountryDetail from "components/CountryDetail";
+import CountryDetail from "pages/Country/components/CountryDetail";
 import CustomTable, { tableSx } from "components/CustomTable";
 import EmptyResponse from "components/ResponseUIs/EmptyResponse";
 import ErrorResponse from "components/ResponseUIs/ErrorResponse";
-import Fuse from "fuse.js";
 import { ArrowDown, ArrowUp } from "iconsax-react";
-import { useEffect, useState } from "react";
-import COUNTRY_API from "services/country-service";
+import useCountry from "./useCountry";
 
 const Country = () => {
-  // Hooks
   const {
-    data: dataCountry,
-    loading: loadingCountry,
-    error: errorCountry,
-  } = useRequest(COUNTRY_API.getCountry);
-
-  // States
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [sort, setSort] = useState("asc");
-  const [filteredCountry, setFilterCountry] = useState<string[]>([]);
-  const [detailModal, setDetailModal] = useState({ open: false, name: "" });
-
-  // Variables
-  const countryNameString = dataCountry?.map((e) => e.name.official) ?? [];
-  const fuse = new Fuse(countryNameString, {
-    threshold: 0.3,
-  });
-  const countryList = dataCountry
-    ?.filter((e) =>
-      search.length > 0 ? filteredCountry.includes(e.name.official) : e
-    )
-    .sort((a, b) =>
-      sort === "asc"
-        ? a.name.official.localeCompare(b.name.official)
-        : b.name.official.localeCompare(a.name.official)
-    )
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  // Methods
-  const handleChangePage = (
-    _: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  // useEffects
-  useEffect(() => {
-    if (page > 0) {
-      setPage(0);
-    }
-
-    const result = fuse.search(search);
-    setFilterCountry(result.map((e) => e.item));
-  }, [search]);
+    sort,
+    page,
+    search,
+    rowsPerPage,
+    countryList,
+    detailModal,
+    errorCountry,
+    loadingCountry,
+    paginationCount,
+    // ---
+    handleChangeRowsPerPage,
+    handleChangePage,
+    setDetailModal,
+    onSortChange,
+    setSearch,
+  } = useCountry();
 
   return (
     <Container component={Stack} pb={2}>
@@ -104,12 +63,7 @@ const Country = () => {
             "Flag",
             <>
               Country Name
-              <IconButton
-                size="small"
-                onClick={() =>
-                  setSort((prev) => (prev === "asc" ? "desc" : "asc"))
-                }
-              >
+              <IconButton size="small" onClick={onSortChange}>
                 {sort === "asc" ? (
                   <ArrowDown size={18} />
                 ) : (
@@ -163,10 +117,10 @@ const Country = () => {
         <EmptyResponse height="75vh" />
       )}
 
-      {countryList && dataCountry && (
+      {paginationCount && (
         <TablePagination
           component="div"
-          count={search.length > 0 ? countryList.length : dataCountry.length}
+          count={paginationCount}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}

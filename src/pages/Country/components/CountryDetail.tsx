@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { useRequest } from "ahooks";
 import COUNTRY_API from "services/country-service";
-import ErrorResponse from "./ResponseUIs/ErrorResponse";
+import ErrorResponse from "../../../components/ResponseUIs/ErrorResponse";
 
 const CountryDetail = ({
   countryName,
@@ -64,7 +64,11 @@ const CountryDetail = ({
                       ({dataCountry.name.common})
                     </Typography>
                     <Typography>
-                      <Typography component="span" variant="subtitle2">
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        fontWeight={600}
+                      >
                         Native Name:{" "}
                       </Typography>
                       {dataCountry.name.nativeName &&
@@ -73,7 +77,11 @@ const CountryDetail = ({
                         )[0]}
                     </Typography>
                     <Typography>
-                      <Typography component="span" variant="subtitle2">
+                      <Typography
+                        component="span"
+                        variant="subtitle2"
+                        fontWeight={600}
+                      >
                         Alternative Name:{" "}
                       </Typography>
                       {dataCountry.altSpellings.join(", ")}

@@ -70,6 +70,11 @@ export const tableSx: ITableStyle = {
     whiteSpace: "nowrap",
   },
   bodyRow: {
+    transition: "background 0.1s ease-in",
+    cursor: "pointer",
+    ":hover": {
+      bgcolor: "grey.100",
+    },
     background: (theme) => theme.palette.common.white,
     "&> td:first-of-type": {
       borderTopLeftRadius: (theme) => theme.spacing(1.5),
