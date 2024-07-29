@@ -1,22 +1,20 @@
 import {
-  Avatar,
   CircularProgress,
   Container,
   Dialog,
   IconButton,
   Stack,
-  TableCell,
   TablePagination,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import CountryDetail from "pages/Country/components/CountryDetail";
-import CustomTable, { tableSx } from "components/CustomTable";
+import CustomTable from "components/CustomTable";
 import EmptyResponse from "components/ResponseUIs/EmptyResponse";
 import ErrorResponse from "components/ResponseUIs/ErrorResponse";
 import { ArrowDown, ArrowUp } from "iconsax-react";
 import useCountry from "./useCountry";
+import CountryItem from "./components/CountryItem";
 
 const Country = () => {
   const {
@@ -78,39 +76,13 @@ const Country = () => {
             "IDD",
           ]}
           body={countryList.map((country) => (
-            <TableRow
-              sx={tableSx.bodyRow}
+            <CountryItem
               key={country.name.official}
-              onClick={() =>
+              country={country}
+              onItemClick={() =>
                 setDetailModal({ open: true, name: country.name.official })
               }
-            >
-              <TableCell>
-                <Avatar
-                  variant="rounded"
-                  src={country.flags.png}
-                  alt="flags"
-                  slotProps={{ img: { sx: { objectFit: "contain" } } }}
-                />
-              </TableCell>
-              <TableCell>{country.name.official}</TableCell>
-              <TableCell>{country.cca2}</TableCell>
-              <TableCell>{country.cca3}</TableCell>
-              <TableCell>
-                {country.name.nativeName &&
-                  Object.values(country.name.nativeName).map(
-                    (e) => e.official
-                  )[0]}
-              </TableCell>
-              <TableCell>{country.altSpellings.join(", ")}</TableCell>
-              <TableCell>
-                {country.idd.suffixes
-                  ?.map((e) => `${country.idd.root}${e}`)
-                  .join(", ")
-                  .slice(0, 5)}
-                {(country.idd.suffixes?.length ?? 0) > 5 && "..."}
-              </TableCell>
-            </TableRow>
+            />
           ))}
         />
       ) : (
